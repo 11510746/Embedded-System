@@ -10,14 +10,15 @@
 //广州市星翼电子科技有限公司 
 
  void initGame(); //声明自定义函数
+ int submit();
 
  typedef struct
 {
-		u8 x;
-		u8 y;
-		u8 number;
-		u8 isDefault; //是否是默认数字，如是则不可更改
-		u16 bgColor; // 格子色和字的背景色
+	u8 x;
+	u8 y;
+	u8 number;
+	u8 isDefault; //是否是默认数字，如是则不可更改
+	u16 bgColor; // 格子色和字的背景色
 }cell; 
 
 cell cells[9][9];
@@ -49,6 +50,12 @@ int main(void)
 	LCD_ShowString(40,260,200,16,16,"Result:");	
 	POINT_COLOR=BLACK;
 	 
+
+
+	/*KEY0 - WALL
+	  0    - Reset
+	  PLAY - Submit
+	*/ 
 	while(1)
 	{
 		str = "";
@@ -94,7 +101,6 @@ int main(void)
 
 					//复原旧格子
   				LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) ,cells[row][col].bgColor);
-					printf("%d %d %d\r\n",row, col,cells[row][col].bgColor);
 					
 					if(cells[row][col].number > 0){
 						BACK_COLOR = cells[row][col].bgColor;
@@ -104,8 +110,6 @@ int main(void)
 					//画新格子
 					if(col == 8){col = 0;}
 					else{col++;}
-
-					printf("%d %d %d\r\n",row, col,cells[row][col].number);
 					
 					LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) , LIGHTBLUE);
 					if(cells[row][col].number > 0){
@@ -276,6 +280,18 @@ int main(void)
 					break;
 				case 2:
 					printf("Submit\r\n");
+					if(submit() == 1){
+						str = "Congratulations";
+					}
+					else{
+						str = "Try again";
+					}
+					break;
+				case 66:
+					printf("Reset(0)\r\n");
+					initGame();
+					row = 4;
+					col = 4;
 					break;
 				default:
 					printf("%d\r\n",key);
@@ -398,4 +414,96 @@ void initGame(){
 	LCD_Fill(3 + size*4, 3 + size*4,1 + size*5 , 1 + size*5 , LIGHTBLUE);
 	BACK_COLOR = LIGHTBLUE;
 	LCD_ShowNum(cells[4][4].x,cells[4][4].y,cells[4][4].number,1,16);
+}
+
+///////////////////////////SUBMIT////////////////////////////////////////
+int submit(){
+	u8 i;
+	u8 j;
+	u8 k;
+	u8 count[10];
+
+	for(i=0; i<10; i++)
+		count[i]=0;
+
+	//行冲突
+	for(i=0; i<9; i++){
+		for(j=0; j<9; j++){
+			//若存在0，则说明没有填完，Game over
+			if(cells[i][j].number == 0)
+				return 0;
+			else
+				count[cells[i][j].number]++;
+		}
+
+		//当前行某个数字出现次数不是1， Game over
+		for(j=1; j<10; j++){
+			if(count[j] != 1)
+				return 0;
+		}
+	}
+
+	for(i=0; i<10; i++)
+		count[i]=0;
+
+	//列冲突
+	for(i=0; i<9; i++){
+		for(j=0; j<9; j++){
+			count[cells[j][i].number]++;
+		}
+
+		//当前列某个数字出现次数不是1， Game over
+		for(j=1; j<10; j++){
+			if(count[j] != 1)
+				return 0;
+		}
+	}
+
+	//小九宫格冲突
+	i = 0;
+	for(k=3; k<10; k=k+3){
+		for(; i<k; i++){
+			for(j=0; j<3; j++){
+				count[cells[j][i].number]++;
+			}
+		}
+
+		//当前宫某个数字出现次数不是1， Game over
+		for(j=1; j<10; j++){
+			if(count[j] != 1)
+				return 0;
+		}
+	}
+	
+	i = 0;
+	for(k=3; k<10; k=k+3){
+		for(; i<k; i++){
+			for(j=3; j<6; j++){
+				count[cells[j][i].number]++;
+			}
+		}
+
+		//当前宫某个数字出现次数不是1， Game over
+		for(j=1; j<10; j++){
+			if(count[j] != 1)
+				return 0;
+		}
+	}
+
+	i = 0;
+	for(k=3; k<10; k=k+3){
+		for(; i<k; i++){
+			for(j=6; j<9; j++){
+				count[cells[j][i].number]++;
+			}
+		}
+
+		//当前宫某个数字出现次数不是1， Game over
+		for(j=1; j<10; j++){
+			if(count[j] != 1)
+				return 0;
+		}
+	}
+	
+	return 1;
 }
