@@ -11,6 +11,7 @@
 
  void initGame(); //声明自定义函数
  int submit();
+ void fillResult();
 
  typedef struct
 {
@@ -400,6 +401,8 @@ void initGame(){
 		}
 	}
 	/////////////画数字//////////////////////
+	fillResult();
+
 	POINT_COLOR=BLACK;
 	for(x = 0; x < 9; x++){		
 		for(y = 0; y < 9; y++){		
@@ -407,6 +410,8 @@ void initGame(){
 				BACK_COLOR = cells[x][y].bgColor;
 				LCD_ShowNum(cells[x][y].x,cells[x][y].y,cells[x][y].number,1,16);
 			}
+			else
+				LCD_Fill(3 + size*y, 3 + size*x,1 + size*(y+1) , 1 + size*(x+1) , cells[x][y].bgColor);
 		}	
 	}
 
@@ -416,6 +421,67 @@ void initGame(){
 	LCD_ShowNum(cells[4][4].x,cells[4][4].y,cells[4][4].number,1,16);
 }
 
+/////////////////////////////////////////////////////////////////////////
+void fillResult(){
+ 	cells[0][1].number = 1;
+ 	cells[0][3].number = 8;
+ 	cells[0][4].number = 4;
+ 	cells[0][5].number = 2;
+ 	cells[0][7].number = 7;
+
+ 	cells[1][0].number = 4;
+ 	cells[1][2].number = 7;
+ 	cells[1][4].number = 3;
+ 	cells[1][6].number = 5;
+ 	cells[1][8].number = 6;
+
+ 	cells[2][0].number = 9;
+ 	cells[2][2].number = 2;
+ 	cells[2][4].number = 5;
+ 	cells[2][6].number = 1;
+ 	cells[2][8].number = 8;
+
+ 	cells[3][1].number = 2;
+ 	cells[3][3].number = 3;
+ 	cells[3][4].number = 6;
+ 	cells[3][5].number = 9;
+ 	cells[3][7].number = 8;
+
+ 	cells[4][0].number = 5;
+ 	cells[4][1].number = 7;
+ 	cells[4][2].number = 6;
+ 	cells[4][3].number = 2;
+ 	cells[4][5].number = 4;
+ 	cells[4][6].number = 9;
+ 	cells[4][7].number = 1;
+ 	cells[4][8].number = 3;
+ 	
+ 	cells[5][1].number = 9;
+ 	cells[5][3].number = 5;
+ 	cells[5][4].number = 1;
+ 	cells[5][5].number = 7;
+ 	cells[5][7].number = 6;
+
+ 	cells[6][0].number = 8;
+ 	cells[6][2].number = 1;
+ 	cells[6][4].number = 7;
+ 	cells[6][6].number = 6;
+ 	cells[6][8].number = 2;
+
+ 	cells[7][0].number = 2;
+ 	cells[7][2].number = 3;
+ 	cells[7][4].number = 9;
+ 	cells[7][6].number = 4;
+ 	cells[7][8].number = 7;
+
+ 	cells[8][1].number = 4;
+ 	cells[8][3].number = 6;
+ 	cells[8][4].number = 2;
+ 	cells[8][5].number = 5;
+ 	cells[8][7].number = 3;
+ }
+
+
 ///////////////////////////SUBMIT////////////////////////////////////////
 int submit(){
 	u8 i;
@@ -423,87 +489,137 @@ int submit(){
 	u8 k;
 	u8 count[10];
 
-	for(i=0; i<10; i++)
-		count[i]=0;
+	//init count
+	for(j=0; j<10; j++)
+		count[j]=0;
 
+	
 	//行冲突
 	for(i=0; i<9; i++){
+	
 		for(j=0; j<9; j++){
 			//若存在0，则说明没有填完，Game over
-			if(cells[i][j].number == 0)
+			if(cells[i][j].number == 0){
+				printf("row_%d col_%d 0\n", i, j);
 				return 0;
+			}
 			else
 				count[cells[i][j].number]++;
 		}
 
 		//当前行某个数字出现次数不是1， Game over
 		for(j=1; j<10; j++){
-			if(count[j] != 1)
+			if(count[j] != 1){
+				printf("count %d is %d\n", j-1, count[j]);
 				return 0;
+			}
 		}
+
+		//init count
+		for(j=0; j<10; j++)
+			count[j]=0;
+
+		printf("row %d are ok\n", i);
 	}
 
-	for(i=0; i<10; i++)
-		count[i]=0;
 
 	//列冲突
 	for(i=0; i<9; i++){
+	
 		for(j=0; j<9; j++){
 			count[cells[j][i].number]++;
 		}
 
 		//当前列某个数字出现次数不是1， Game over
 		for(j=1; j<10; j++){
-			if(count[j] != 1)
+			if(count[j] != 1){
+				printf("count %d is %d\n", j, count[j]);
 				return 0;
+			}
 		}
+
+		//init count
+		for(j=0; j<10; j++)
+			count[j]=0;
+
+		printf("col %d are ok\n",i);
 	}
 
 	//小九宫格冲突
 	i = 0;
 	for(k=3; k<10; k=k+3){
+
 		for(; i<k; i++){
 			for(j=0; j<3; j++){
-				count[cells[j][i].number]++;
+				count[cells[i][j].number]++;
 			}
 		}
 
 		//当前宫某个数字出现次数不是1， Game over
 		for(j=1; j<10; j++){
-			if(count[j] != 1)
+			if(count[j] != 1){
+				printf("count %d is %d\n", j, count[j]);
 				return 0;
+			}
 		}
+
+
+		//init count
+		for(j=0; j<10; j++)
+			count[j]=0;
+
+		printf("box i_%d j_0-3 is ok\n", i);
 	}
 	
 	i = 0;
 	for(k=3; k<10; k=k+3){
+		
 		for(; i<k; i++){
 			for(j=3; j<6; j++){
-				count[cells[j][i].number]++;
+				count[cells[i][j].number]++;
 			}
 		}
 
 		//当前宫某个数字出现次数不是1， Game over
 		for(j=1; j<10; j++){
-			if(count[j] != 1)
+			if(count[j] != 1){
+				printf("count %d is %d\n", j, count[j]);
 				return 0;
+			}
 		}
+
+		//init count
+		for(j=0; j<10; j++)
+			count[j]=0;
+
+		printf("box i_%d j_3-6 is ok\n", i);
 	}
 
 	i = 0;
 	for(k=3; k<10; k=k+3){
+
 		for(; i<k; i++){
 			for(j=6; j<9; j++){
-				count[cells[j][i].number]++;
+				count[cells[i][j].number]++;
 			}
 		}
 
 		//当前宫某个数字出现次数不是1， Game over
 		for(j=1; j<10; j++){
-			if(count[j] != 1)
+			if(count[j] != 1){
+				printf("count %d is %d\n", j, count[j]);
 				return 0;
+			}
 		}
+
+		//init count
+		for(j=0; j<10; j++)
+			count[j]=0;
+
+		printf("box i_%d j_0-3 is ok\n", i);
 	}
-	
+
 	return 1;
 }
+
+ 
