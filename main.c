@@ -46,24 +46,23 @@ int main(void)
 	 
  	POINT_COLOR=RED;//设置字体为红色 
  	BACK_COLOR = WHITE;
-	LCD_ShowString(60,260,200,16,16,"Result:");	
-	LCD_ShowString(60,280,200,16,16,"hh");
-	
+	LCD_ShowString(40,260,200,16,16,"Result:");	
+	POINT_COLOR=BLACK;
 	 
 	while(1)
 	{
+		str = "";
+		BACK_COLOR = LIGHTBLUE;
 		key=Remote_Scan();	
 		if(key)
 		{	 		
-			//show current position and num
-			printf("row_%d col_%d num_%d\r\n",row, col,cells[row][col].number);
-			
 			switch(key)
 			{	 
 				case 98:
 					printf("UP\r\n");
 					//检查是否可以穿墙
 					if(row == 0 && wall == 1){
+						str = "Hit the Wall!(KEY0)";
 						break;
 					}
 
@@ -89,6 +88,7 @@ int main(void)
 					printf("Right\r\n");
 					//检查是否可以穿墙
 					if(col == 8 && wall == 1){
+						str = "Hit the Wall!(KEY0)";
 						break;
 					}
 
@@ -117,6 +117,7 @@ int main(void)
 						printf("LEFT\r\n");
 					//检查是否可以穿墙
 					if(col == 0 && wall == 1){
+						str = "Hit the Wall!(KEY0)";
 						break;
 					}
 
@@ -142,6 +143,7 @@ int main(void)
 					printf("DOWN\r\n");
 					//检查是否可以穿墙
 					if(row == 8 && wall == 1){
+						str = "Hit the Wall!(KEY0)";
 						break;
 					}
 
@@ -163,20 +165,132 @@ int main(void)
 						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
 					}
 					break;	
-				case 104:str="1";break;		  
-				case 152:str="2";break;	   
-				case 176:str="3";break;	    
-				case 48:str="4";break;		    
-				case 24:str="5";break;		    
-				case 122:str="6";break;		  
-				case 16:str="7";break;			   					
-				case 56:str="8";break;	 
-				case 90:str="9";break;
-				case 66:str="0";break;
+				case 104:
+					if(cells[row][col].isDefault == 1){
+						str = "default value";
+					}
+					else{
+						printf("Set 1\r\n");
+						cells[row][col].number = 1;
+						LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) , LIGHTBLUE);
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+					break;	  
+				case 152:
+					if(cells[row][col].isDefault == 1){
+						str = "default value";
+					}
+					else{
+						printf("Set 2\r\n");
+						cells[row][col].number = 2;
+						LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) , LIGHTBLUE);
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+					break;   
+				case 176:
+					if(cells[row][col].isDefault == 1){
+						str = "default value";
+					}
+					else{
+						printf("Set 3\r\n");
+						cells[row][col].number = 3;
+						LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) , LIGHTBLUE);
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+					break;	    
+				case 48:
+					if(cells[row][col].isDefault == 1){
+						str = "default value";
+					}
+					else{
+						printf("Set 4\r\n");
+						cells[row][col].number = 4;
+						LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) , LIGHTBLUE);
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+					break;		    
+				case 24:
+					if(cells[row][col].isDefault == 1){
+						str = "default value";
+					}
+					else{
+						printf("Set 5\r\n");
+						cells[row][col].number = 5;
+						LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) , LIGHTBLUE);
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+					break;		    
+				case 122:
+					if(cells[row][col].isDefault == 1){
+						str = "default value";
+					}
+					else{
+						printf("Set 6\r\n");
+						cells[row][col].number = 6;
+						LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) , LIGHTBLUE);
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+					break;  
+				case 16:
+					if(cells[row][col].isDefault == 1){
+						str = "default value";
+					}
+					else{
+						printf("Set 7\r\n");
+						cells[row][col].number = 7;
+						LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) , LIGHTBLUE);
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+					break;		   					
+				case 56:
+					if(cells[row][col].isDefault == 1){
+						str = "default value";
+					}
+					else{
+						printf("Set 8\r\n");
+						cells[row][col].number = 8;
+						LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) , LIGHTBLUE);
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+					break;	 
+				case 90:
+					if(cells[row][col].isDefault == 1){
+						str = "default value";
+					}
+					else{
+						printf("Set 9\r\n");
+						cells[row][col].number = 9;
+						LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) , LIGHTBLUE);
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+					break;
+				case 82:
+					if(cells[row][col].isDefault == 1){
+						str = "default value";
+					}
+					else{
+						printf("DELETE\r\n");
+						cells[row][col].number = 0;
+						LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) , LIGHTBLUE);
+					}
+					break;
+				case 2:
+					printf("Submit\r\n");
+					break;
 				default:
+					printf("%d\r\n",key);
 					break;		 
 			}
-		}else delay_ms(10000);	  
+
+			//show current position and num
+			printf("row_%d col_%d num_%d\r\n",row, col,cells[row][col].number);
+			POINT_COLOR = RED;
+			BACK_COLOR = WHITE;
+			LCD_Fill(40, 280, lcddev.width-1, 280+16 , WHITE);
+			LCD_ShowString(40,280,200,16,16,str);
+			POINT_COLOR = BLACK;
+
+		}else delay_ms(4000);	  
 		t++;
 		if(t==20)
 		{
