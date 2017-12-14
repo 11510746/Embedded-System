@@ -26,40 +26,143 @@ int main(void)
  { 
 	u8 key;
 	u8 t=0;	
-	u8 *str=0; 	
+	u8 *str=0; 
+
+	//自定义函数
+	u8 wall = 0; //墙
+	u8 row = 4;	//默认当前位置坐标
+	u8 col = 4;
+	u8 size; //格子大小
+
 	delay_init();	    	 //延时函数初始?
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);// 设置中断优先级分组2	  
 	uart_init(9600);	 	//串口初始化为9600
 	LED_Init();		  		//初始化与LED连接的硬件接口
  	LCD_Init();
+	size = lcddev.width/9;
 	Remote_Init();			//红外接收初始化	
 	
 	initGame();
 	 
  	POINT_COLOR=RED;//设置字体为红色 
-	LCD_ShowString(60,280,200,16,16,"Result:");	
-	LCD_ShowString(60,300,200,16,16,"hh");
+ 	BACK_COLOR = WHITE;
+	LCD_ShowString(60,260,200,16,16,"Result:");	
+	LCD_ShowString(60,280,200,16,16,"hh");
 	
 	 
 	while(1)
 	{
 		key=Remote_Scan();	
 		if(key)
-		{	 
-			LCD_ShowNum(116,130,key,3,16);		//显示键值
-			LCD_ShowNum(116,150,RmtCnt,3,16);	//显示按键次数		  
+		{	 		
+			//show current position and num
+			printf("row_%d col_%d num_%d\r\n",row, col,cells[row][col].number);
+			
 			switch(key)
-			{
-				case 0:str="ERROR";break;			   
-				case 162:str="POWER";LED1=1;break;	    
-				case 98:str="UP";LED1=0;break;	    
-				case 2:str="PLAY";break;		 
-				case 226:str="ALIENTEK";break;		  
-				case 194:str="RIGHT";break;	   
-				case 34:str="LEFT";break;		  
-				case 224:str="VOL-";break;		  
-				case 168:str="DOWN";break;		   
-				case 144:str="VOL+";break;		    
+			{	 
+				case 98:
+					printf("UP\r\n");
+					//检查是否可以穿墙
+					if(row == 0 && wall == 1){
+						break;
+					}
+
+					//复原旧格子
+  				LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) ,cells[row][col].bgColor);
+					
+					if(cells[row][col].number > 0){
+						BACK_COLOR = cells[row][col].bgColor;
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+
+					//画新格子
+					if(row == 0){row = 8;}
+					else{row--;}
+					
+					LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) , LIGHTBLUE);
+					if(cells[row][col].number > 0){
+						BACK_COLOR = LIGHTBLUE;
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+					break;	
+				case 194:
+					printf("Right\r\n");
+					//检查是否可以穿墙
+					if(col == 8 && wall == 1){
+						break;
+					}
+
+					//复原旧格子
+  				LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) ,cells[row][col].bgColor);
+					printf("%d %d %d\r\n",row, col,cells[row][col].bgColor);
+					
+					if(cells[row][col].number > 0){
+						BACK_COLOR = cells[row][col].bgColor;
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+
+					//画新格子
+					if(col == 8){col = 0;}
+					else{col++;}
+
+					printf("%d %d %d\r\n",row, col,cells[row][col].number);
+					
+					LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) , LIGHTBLUE);
+					if(cells[row][col].number > 0){
+						BACK_COLOR = LIGHTBLUE;
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+					break;	   
+				case 34:
+						printf("LEFT\r\n");
+					//检查是否可以穿墙
+					if(col == 0 && wall == 1){
+						break;
+					}
+
+					//复原旧格子
+  				LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) ,cells[row][col].bgColor);
+					
+					if(cells[row][col].number > 0){
+						BACK_COLOR = cells[row][col].bgColor;
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+
+					//画新格子
+					if(col == 0){col = 8;}
+					else{col--;}
+					
+					LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) , LIGHTBLUE);
+					if(cells[row][col].number > 0){
+						BACK_COLOR = LIGHTBLUE;
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+					break;	  	  
+				case 168:
+					printf("DOWN\r\n");
+					//检查是否可以穿墙
+					if(row == 8 && wall == 1){
+						break;
+					}
+
+					//复原旧格子
+  				LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) ,cells[row][col].bgColor);
+					
+					if(cells[row][col].number > 0){
+						BACK_COLOR = cells[row][col].bgColor;
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+
+					//画新格子
+					if(row == 8){row = 0;}
+					else{row++;}
+					
+					LCD_Fill(3 + size*col, 3 + size*row,1 + size*(col+1) , 1 + size*(row+1) , LIGHTBLUE);
+					if(cells[row][col].number > 0){
+						BACK_COLOR = LIGHTBLUE;
+						LCD_ShowNum(cells[row][col].x,cells[row][col].y,cells[row][col].number,1,16);
+					}
+					break;	
 				case 104:str="1";break;		  
 				case 152:str="2";break;	   
 				case 176:str="3";break;	    
@@ -70,11 +173,10 @@ int main(void)
 				case 56:str="8";break;	 
 				case 90:str="9";break;
 				case 66:str="0";break;
-				case 82:str="DELETE";break;		 
+				default:
+					break;		 
 			}
-			LCD_Fill(116,170,116+8*8,170+16,WHITE);	//清除之前的显示
-			LCD_ShowString(116,170,200,16,16,str);	//显示SYMBOL
-		}else delay_ms(10);	  
+		}else delay_ms(10000);	  
 		t++;
 		if(t==20)
 		{
