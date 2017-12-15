@@ -3,7 +3,8 @@
 #include "sys.h"
 #include "usart.h"
 #include "lcd.h"
-#include "remote.h"   
+#include "remote.h"
+#include "key.h"
 //ALIENTEK Mini STM32开发板范例代码22
 //红外遥控实验  
 //技术支持：www.openedv.com
@@ -27,7 +28,7 @@ cell cells[9][9];
 int main(void)
  { 
 	u8 key;
-	u8 t=0;	
+	u8 t;
 	u8 *str=0; 
 
 	//自定义函数
@@ -41,6 +42,7 @@ int main(void)
 	uart_init(9600);	 	//串口初始化为9600
 	LED_Init();		  		//初始化与LED连接的硬件接口
  	LCD_Init();
+	KEY_Init(); 
 	size = lcddev.width/9;
 	Remote_Init();			//红外接收初始化	
 	
@@ -61,7 +63,20 @@ int main(void)
 	{
 		str = "";
 		BACK_COLOR = LIGHTBLUE;
-		key=Remote_Scan();	
+		key=Remote_Scan();
+		t=KEY_Scan(0);
+
+		switch(t)
+		{				 
+			case KEY0_PRES:
+				printf("KEY0 PRES");
+				wall = !wall;
+				break;
+			default:
+				break;
+
+		}
+
 		if(key)
 		{	 		
 			switch(key)
@@ -391,6 +406,13 @@ void initGame(){
 	cells[8][6].number = 8;
 	cells[8][8].number = 1;
 	
+	//清除页面
+	for(x = 0; x < 9; x++){		
+		for(y = 0; y < 9; y++){	
+			LCD_Fill(3 + size*y, 3 + size*x,1 + size*(y+1) , 1 + size*(x+1) , WHITE);
+		}
+	}
+	
 	for(x = 0; x < 9; x++){		
 		for(y = 0; y < 9; y++){
 			if(cells[x][y].number != 0){
@@ -401,17 +423,15 @@ void initGame(){
 		}
 	}
 	/////////////画数字//////////////////////
-	fillResult();
-
+	//fillResult();
+	
 	POINT_COLOR=BLACK;
 	for(x = 0; x < 9; x++){		
 		for(y = 0; y < 9; y++){		
 			if(cells[x][y].number != 0){
 				BACK_COLOR = cells[x][y].bgColor;
 				LCD_ShowNum(cells[x][y].x,cells[x][y].y,cells[x][y].number,1,16);
-			}
-			else
-				LCD_Fill(3 + size*y, 3 + size*x,1 + size*(y+1) , 1 + size*(x+1) , cells[x][y].bgColor);
+			}				
 		}	
 	}
 
